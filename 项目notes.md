@@ -119,6 +119,9 @@ lodash.isEqual(value, other)
   3.1. getDerivedStateFromProps(nextProps, prevState)
   3.2. getSnapshotBeforeUpdate(prevProps, prevState)
 
+  4. 需求：文本不超过四行，正常显示，超过四行显示展开更多，点击展开更多可以展开所有，并有收起展开
+      方案一：父组件position:relative，文本内容设置line-height等使其高度可知;展开更多组件position:absolute,定位到父组件top值设置为想展示的高度，然后父组件的动态设置overflow:hidden;max-height。当未超过四行时，max-height生效，overflow:hidden生效，就展示不出加载更多，当超过四行时自然就展示出了展开更多选项，点击展开更多控制max-height和overflow:visible，高度自然撑开；点回去同理。
+
 
 
 ### 报错篇
