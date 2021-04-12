@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <!-- react.js是react的顶级库，提供react的api -->
+    <!-- react-dom.js是渲染组件到视图 -->
+    <!-- babel.js是解析jsx语法 -->
+    <div id="appid1"></div>
+    <div id="appid2"></div>
+    <div id="appid3"></div>
+    <div id="appid4"></div>
+    <script type="text/babel">
+        let App1="这是个字符串";
+        let App2=<div>这是个react元素</div>
+        class App3 extends React.Component{
+            render(){
+                return (
+                    <div>这是react类组件</div>
+                )
+            }
+        }
+        function App4(){
+            return (
+                <div>这是react函数组件</div>
+            )
+        }
+        ReactDOM.render(App1,document.querySelector('#appid1'))
+        ReactDOM.render(App2,document.querySelector('#appid2'))
+        ReactDOM.render(<App3 />,document.querySelector('#appid3'))
+        ReactDOM.render(<App4 />,document.querySelector('#appid4'))
+    </script>
+</body>
+</html>
