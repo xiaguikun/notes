@@ -10,6 +10,7 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 ``` 
+    元素需要设置为块状元素，display:block;
     多行省略号兼容：显示出来多一点点（兼容iphone手机）添加行高line-height，写max-height
 
 2. 强制换行终极版
@@ -128,5 +129,43 @@ lodash.isEqual(value, other)
 
 1.  在编译的时候报找不到某个东西的情景，解决方案，有可能是路径有错误，检查路径，或者文件里面有些模块快未安装依赖，如果需要用就安装依赖，如果不需要用就直接删掉就好了，或者重新安装依赖
 
+
+### 配置篇
+
+关于自动格式化代码，vscode下载插件，ESlint和Prettier
+然后配置vscode的设置，打开settings.json(设置里面)配置代码如下
+```json
+{
+    "workbench.iconTheme": "vscode-icons",
+    "editor.fontSize": 13,
+    "css.completion.completePropertyWithSemicolon": false,
+    "eslint.format.enable": true,
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    //配置prettier++
+     // tab 大小为2个空格
+    "editor.tabSize": 2,
+     // 100 列后换行
+    "editor.wordWrapColumn": 100,
+     // 保存时格式化
+    "editor.formatOnSave":true,
+    // 开启 vscode 文件路径导航
+    "breadcrumbs.enabled": true,
+    // prettier 设置强制单引号
+    "prettier.singleQuote": true,
+    // prettier 设置语句末尾加分号
+    "prettier.semi":true,
+    // 选择 vue 文件中 template 的格式化工具
+    "vetur.format.defaultFormatter.html": "prettyhtml",
+    // 显示 markdown 中英文切换时产生的特殊字符
+    "editor.renderControlCharacters": true,
+    // 让函数(名)和后面的括号之间加个空格
+    "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+    // 让vue中的js按编辑器自带的ts格式进行格式化
+    "vetur.format.defaultFormatter.js": "vscode-typescript",
+    // vetur 的自定义设置
+    "vetur.format.defaultFormatterOpti
+```
 
 
