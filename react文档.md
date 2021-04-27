@@ -3393,6 +3393,29 @@ export default class App extends Component {
 
 React 在 v16.8 的版本中推出了 React Hooks 新特性，虽然社区还没有最佳实践如何基于 React Hooks 来打造复杂应用(至少我还没有)，凭借着阅读社区中大量的关于这方面的文章，下面我将通过十个案例来帮助你认识理解并可以熟练运用 React Hooks 大部分特性。
 
+3.  注意事项
+
+    (1).  不能将 hooks 放在循环、条件语句或者嵌套方法内。react 是根据 hooks 出现顺序来记录对应状态的，执行以上操作会打乱 hooks 顺序
+    (2).  只在 function 组件和自定义 hooks 中使用 hooks。
+
+4. 命名规范
+
+    (1).  使用驼峰命名法，useState 返回数组的第二项以 set 开头（仅作为约定）。
+    (2).  自定义 hooks 以 use 开头（可被 lint 校验）
+
+5.  简释
+
+  1. useState：就是类组件的 state，使得函数组件可以拥有类组件一样的状态
+  2. useReducer：setState，同时 useState 也是该方法的封装
+  3. useRef: refx
+  4. useImperativeHandle: 给 ref 分配特定的属性
+  5. useContext: context，需配合 createContext 使用
+  6. useMemo: 可以对 setState 的优化
+  7. useCallback: useMemo 的变形，对函数进行优化
+  8. useEffect: 类似 componentDidMount/Update, componentWillUnmount，当效果为 componentDidMount/Update 时，总是在整个更新周期的最后（页面渲染完成后）才执行
+  9. useLayoutEffect: 用法与 useEffect 相同，区别在于该方法的回调会在数据更新完成后，页面渲染之前进行，该方法会阻碍页面的渲染
+  10. useDebugValue：用于在 React 开发者工具中显示自定义 hook 的标签
+
 ## 1、useState 保存组件状态
 
 在类组件中，我们使用 `this.state` 来保存组件状态，并对其修改触发组件重新渲染。比如下面这个简单的计数器组件，很好诠释了类组件如何运行：
@@ -3444,6 +3467,19 @@ function App() {
 似乎有个 useState 后，函数组件也可以拥有自己的状态了，但仅仅是这样完全不够。
 
 ## 2、useEffect 处理副作用
+
+1.  useEffect 接收两个参数，第一个参数是一个回调函数，第二个参数是一个数组,数组里可以添加需要监听的变量（可选），无返回值
+2.  useEffect 常用来处理副作用，代替一些常用的生命周期（副作用：和函数业务主逻辑关联不大，特定时间或事件中执行的动作，比如 Ajax 请求后端数据，添加登录监听和取消登录，手动修改 DOM 等等），一般用来代替 componentDidMounu,componentDidUpdate,componentWillUnmount 三个生命周期，但是和生命周期不同的是，useEffect 是异步执行的，不会阻碍页面的渲染，而生命周期是同步进行的
+3.  第二个参数，如果不传，就会模拟 componentDidMount 和 componentDidUpdate 两个生命周期
+    第二个参数数组里面如果传入参数状态变量们就会模拟 componentDidMount 和监听的状态变量发生变化时执行
+    第二个参数如果传一个空数组[]，就会模拟 componentDidMount,hooks 中的 return 一个匿名函数部分会在 componentWillUnmount 中执行
+4.  补充：
+    useLayoutEffect(effect, array);
+    与 useEffect 使用方法一样，只是执行回调函数的时机有着略微区别，运行时机更像是 componentDidMount 和 componentDidUpdate。但是要注意的是，该方法是同步方法，在浏览器 paint 之前执行，会阻碍浏览器 paint，只有当我们需要进行 DOM 的操作时才使用该函数（比如设定 DOM 布局尺寸，这样可以防抖动）。
+    useEffect 与 useLayoutEffect:
+    正常情况用默认的 useEffect 钩子就够了，这可以保证状态变更不阻塞渲染过程，但如果 effect 更新（清理）中涉及 DOM 更新操作，用 useEffect 就会有意想不到的效果，这时我们最好使用 useLayoutEffect 。
+    比如逐帧动画 requestAnimationFrame ，需要保证同步变更。这也符合作者说到的 useEffect 的时期是非常晚，可以保证页面是稳定下来再做事情。
+    钩子的执行顺序：​useLayoutEffect > requestAnimationFrame > useEffect​
 
 函数组件能保存状态，但是对于异步请求，副作用的操作还是无能为力，所以 React 提供了 useEffect 来帮助开发者处理函数组件的副作用，在介绍新 API 之前，我们先来看看类组件是怎么做的：
 
