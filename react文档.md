@@ -141,6 +141,8 @@ react 最核心的思想是将页面中任何一个区域或者元素都可以�
 
 # 三、编写第一个 react 应用程序
 
+##	1.脚手架使用
+
 react 开发需要引入多个依赖文件：react.js、react-dom.js，分别又有开发版本和生产版本，create-react-app 里已经帮我们把这些东西都安装好了。把通过 CRA 创建的工程目录下的 src 目录清空，然后在里面重新创建一个 index.js. 写入以下代码:
 
 ```jsx
@@ -157,6 +159,20 @@ ReactDOM.render(
   document.getElementById('root')
 );
 ```
+
+##	2.单个文件使用
+
+单个html文件使用react需要引入三个文件才能使用
+
+```jsx
+react.js	          	 -------React的顶级库，引入之后就可以使用react的api
+react-dom.js			 -------reactDom适用于渲染组件到视图
+babel-loader			 -------用于解析jsx语法
+
+通过ReactDOM.render(组价(页面)名，dom节点)方法渲染组件到指定的dom节点
+```
+
+
 
 # 四、元素与组件
 
@@ -262,7 +278,7 @@ React.createClass({
 
 ## 4、组件的组合、嵌套
 
-将一个组件渲染到某一个节点里的时候，会将这个节点里原有内容覆盖
+组件组合方式将一个组件渲染到某一个节点里的时候，会将这个节点里原有内容覆盖，组件中通过props.children来渲染插进来的组件
 
 组件嵌套的方式就是将子组件写入到父组件的模板中去，且 react 没有 Vue 中的内容分发机制（slot），所以我们在一个组件的模板中只能看到父子关系
 
@@ -307,6 +323,19 @@ class App extends Component {
 }
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
+
+##	5、样式引入
+
+常用的四种样式引入方式(六中详细解释)
+
+```jsx
+行内样式
+引入样式
+通过包classname(classnames)控制类名的方式引入
+通过包styled-components开发引入样式组件
+```
+
+
 
 # 五、JSX 原理
 
