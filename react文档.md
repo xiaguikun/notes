@@ -141,7 +141,7 @@ react 最核心的思想是将页面中任何一个区域或者元素都可以�
 
 # 三、编写第一个 react 应用程序
 
-##	1.脚手架使用
+## 1.脚手架使用
 
 react 开发需要引入多个依赖文件：react.js、react-dom.js，分别又有开发版本和生产版本，create-react-app 里已经帮我们把这些东西都安装好了。把通过 CRA 创建的工程目录下的 src 目录清空，然后在里面重新创建一个 index.js. 写入以下代码:
 
@@ -160,9 +160,9 @@ ReactDOM.render(
 );
 ```
 
-##	2.单个文件使用
+## 2.单个文件使用
 
-单个html文件使用react需要引入三个文件才能使用
+单个 html 文件使用 react 需要引入三个文件才能使用
 
 ```jsx
 react.js	          	 -------React的顶级库，引入之后就可以使用react的api
@@ -171,8 +171,6 @@ babel-loader			 -------用于解析jsx语法
 
 通过ReactDOM.render(组价(页面)名，dom节点)方法渲染组件到指定的dom节点
 ```
-
-
 
 # 四、元素与组件
 
@@ -278,7 +276,7 @@ React.createClass({
 
 ## 4、组件的组合、嵌套
 
-组件组合方式将一个组件渲染到某一个节点里的时候，会将这个节点里原有内容覆盖，组件中通过props.children来渲染插进来的组件
+组件组合方式将一个组件渲染到某一个节点里的时候，会将这个节点里原有内容覆盖，组件中通过 props.children 来渲染插进来的组件
 
 组件嵌套的方式就是将子组件写入到父组件的模板中去，且 react 没有 Vue 中的内容分发机制（slot），所以我们在一个组件的模板中只能看到父子关系
 
@@ -324,7 +322,7 @@ class App extends Component {
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-##	5、样式引入
+## 5、样式引入
 
 常用的四种样式引入方式(六中详细解释)
 
@@ -334,8 +332,6 @@ ReactDOM.render(<App />, document.getElementById('root'));
 通过包classname(classnames)控制类名的方式引入
 通过包styled-components开发引入样式组件
 ```
-
-
 
 # 五、JSX 原理
 
@@ -1595,17 +1591,25 @@ ReactDOM.render(<App />, document.getElementById('root'));
 
 # 十二、组件通信
 
-**父组件与子组件通信**
+**组件通信可分为**
+
+父子组件通信 子父组件通信 非父子组件通信 跨组件通信 路由通信 多组件状态共享
+
+## 1.父组件与子组件通信
 
 - 父组件将自己的状态传递给子组件，子组件当做属性来接收，当父组件更改自己状态的时候，子组件接收到的属性就会发生改变
 
 - 父组件利用`ref`对子组件做标记，通过调用子组件的方法以更改子组件的状态,也可以调用子组件的方法..
+  ```jsx
+  <Children ref={el=>this.childComp=el}></Children>
+  <!-- 这时就可以通过this.childComp这个属性来访问子组件的方法或状态(this.childComp.state,this.childComp.method) -->
+  ```
 
-**子组件与父组件通信**
+## 2.子组件与父组件通信
 
 - 父组件将自己的某个方法传递给子组件，在方法里可以做任意操作，比如可以更改状态，子组件通过`this.props`接收到父组件的方法后调用。
 
-**跨组件通信**
+## 3.跨组件通信
 
 在 react 没有类似 vue 中的事件总线来解决这个问题，我们只能借助它们共同的父级组件来实现，将非父子关系装换成多维度的父子关系。react 提供了`context` api 来实现跨组件通信, React 16.3 之后的`context`api 较之前的好用。
 
@@ -1698,6 +1702,17 @@ class App extends Component {
 ```
 
 > 复杂的非父子组件通信在 react 中很难处理，多组件间的数据共享也不好处理，在实际的工作中我们会使用 flux、redux、mobx 来实现
+
+## 补充知识点
+
+**nodejs 事件**
+
+```js
+import events from 'events'; //nodejs提供api
+const envBus = events.EventEmitter.protoType;
+envBus.on('fn', () => {}); //监听事件
+envBus.emit('fn'); //抛出事件
+```
 
 # 十三、HOC(高阶组件)
 
