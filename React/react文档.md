@@ -3674,6 +3674,8 @@ function App() {
 
 useRef 返回的值传递给组件或者 DOM 的 ref 属性，就可以通过 ref.current 值**访问组件或真实的 DOM 节点，重点是组件也是可以访问到的**，从而可以对 DOM 进行一些操作，比如监听事件等等。
 
+注意***：通过useRef也可以拿到组件，类组件和元素的一样，但是函数组件需要在函数组件的外层用React.forwardRef(function comp(){})包一层，其中forwardRef()的作用就是将函数组件包上一层类组件，return出原来的函数组件，是的组件的身上有this，从而可以使用ref
+
 当然 useRef 远比你想象中的功能更加强大，useRef 的功能有点像类属性，或者说您想要在组件中记录一些值，并且这些值在稍后可以更改。
 
 利用 useRef 就可以绕过 Capture Value 的特性。可以认为 ref 在所有 Render 过程中保持着唯一引用，因此所有对 ref 的赋值或取值，拿到的都只有一个最终状态，而不会在每个 Render 间存在隔离。
