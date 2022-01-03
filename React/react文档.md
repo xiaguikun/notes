@@ -1382,6 +1382,10 @@ React 的 16.3 版本中对生命周期进行了较大的调整，这是为了�
 - 无条件的根据 prop 来更新内部 state，也就是只要有传入 prop 值， 就更新 state
 - 只有 prop 值和 state 值不同时才更新 state 值。
 
+```js
+注意：这个生命周期中不能使用this，因为这个生命周期是类的静态属性，类的静态属性的this指向这个类，而不是指向实例的组件对象
+```
+
 我们接下来看几个例子。
 
 假设我们有个一个表格组件，它会根据传入的列表数据来更新视图。
@@ -1520,7 +1524,7 @@ React 不会在组件初始化 props 时调用这个方法。调用`this.setStat
 
 _不能在这里使用 this.setState()_，也不能做会触发视图更新的操作。如果需要更新`state`或`props`，调用`getDerivedStateFromProps`。
 
-**(9) getSnapshotBeforeUpdate()**
+**(9) getSnapshotBeforeUpdate(prevProps,prevState)**
 
 在 react `render()`后的输出被渲染到 DOM 之前被调用。它使您的组件能够在它们被潜在更改之前捕获当前值（如滚动位置）。这个生命周期返回的任何值都将作为参数传递给 componentDidUpdate（）。
 
