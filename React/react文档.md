@@ -3870,7 +3870,86 @@ function App() {
 
 不过`useLayoutEffect`在服务端渲染时会出现一个 warning，要消除的话得用`useEffect`代替或者推迟渲染时机。
 
-# 二十、Mobx
+#	二十、路由React-router
+
+###	1.简介
+
+```
+1.我们使用里面的react-router-dom来实现路由功能
+模式：
+	HashRouter模式   #/home	底层原理：通过监听hashChange事件
+	BrowserRouter模式	/home	  底层原理：H5的popState＋H5的history api
+```
+
+###	2.使用
+
+```
+1. 安装包 yarn add react-router-dom    (可以直接参照官网)
+2. 在项目中找入口文件，然后确定模式，HashRouter模式BrowserRouter模式
+	import {BrowserRouer} form "react-router-dom" 然后包裹在组件的最外层 
+```
+
+###	3.案例
+
+```jsx
+// ---------常用模式
+import {BrowserRouter,Route,Switch,Redirect} from 'react-router-dom'
+import Home from '../home/index.js';
+//Switch 组件表示里面的只会渲染一个，不会全部渲染出来     exact表示严格匹配
+const AppRouter = () => {
+    return (
+        <BrowserRouter>
+                <Switch>
+                    <Redirect from='/' to='/login' exact></Redirect>
+                    <Route path='/login' component={Login2}></Route>
+                    <Route path='/admin' component={()=><Home>
+                        <Switch>
+                            <Redirect from='/admin' to='/admin/home' exact></Redirect>
+                            <Route path='/admin/home' component={Welcome}></Route>
+                            <Route path='/admin/ui/buttons' component={Buttons}></Route>
+                            <Route path='/admin/ui/modals' component={Modals}></Route>
+                            <Route path='/admin/ui/loadings' component={Spin}></Route>
+                            <Route path='/admin/city' component={City}></Route>
+                            <Route path='/admin/order' component={Order}></Route>
+                            <Route path='/admin/bikeMap' component={()=><BikeMap></BikeMap>}></Route>
+                            <Route path='/admin/charts/bar' component={Interval}></Route>
+                    </Home>}> 
+                    </Route>
+                </Switch>
+        </BrowserRouter>
+    );
+}
+// component可以渲染类组件和函数组件(可以拿到this.props)
+// render只能接受函数组件，如果非要传入类组件，则用箭头函数，返回值是函数组价的标签(函数组件可以拿到	      props，类组件需要处理后拿到props)
+// children不管路径有没没有匹配，都会被渲染，不能使用类组件，不在switch中，要不然是排他性，就失效了(函数    组件可以拿到props，类组件需要处理后拿到props)
+// 在<Route></Route>标签的中间直接写入一个标签 拿不到props
+
+
+// ---------页面懒加载
+import react {lazy,Suspense} from "react";
+const Home = lazy(()=>import("./pages/Home"))
+
+return (
+    <Suspense fallback={<div>页面切换加载中。。。</div>}>
+        <Route path="/home" component={HOme}></Route>
+    </Suspense>
+)
+                        
+                        
+// --------页面跳转
+   -------方式一
+import {NavLinnk,Link} form "react-router-dom";
+- react-router-dom 中提供了两种导航组件  --Link  普通导航		--NavLink  激活导航
+<NavLink to="./path" activeClassName="active"></NavLink>
+   -------方式二
+import {useHistory} from 'react-router-dom';
+const history=useHistory();
+history.push('/admin')                        
+```
+
+
+
+# 二十一、Mobx
 
 Mobx 是一个功能强大，上手非常容易的状态管理工具。redux 的作者也曾经向大家推荐过它，在不少情况下可以使用 Mobx 来替代掉 redux。
 
