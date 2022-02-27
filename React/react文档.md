@@ -3947,9 +3947,124 @@ const history=useHistory();
 history.push('/admin')                        
 ```
 
+#	二十一、状态管理（Redux）(与十五重复)
+
+###	1.React状态管理的历程
+
+```
+-	Flux 和reatc同期发布的状态管理工具------基本不用
+-	Redux Flux升级版-----主流使用
+-	Mobx Mobx是为了弥补Redux的缺陷-----小部分使用
+```
+
+###	2.Redux的使用
+
+#####	2.1Redux基础点
+
+```
+1.Redux的构成部分，将一个应用分成了四个部分
+	- store		用户存储和管理数据
+	- actionCreators	创建动作，发送动作，类似于Vue的 actions
+	- redurces		用于修改数据
+	- view		视图就是react的组件
+
+2.Redux的注意事项（三大原则）
+	- Redux要求唯一数据源
+	- Redux状态是只读的（不可修改，如果你要修改，需要先拷贝）
+	- Redux要求数据的修改必须是一个纯函数（纯函数：只做数据修改这样一个业务）
+	
+3.Redux 使用 yarn add redux
+	中文网：https://www.redux.org.cn/
+	官网：https://redux.js.org/
+```
+
+![1644672128647](C:\Users\xiagu\AppData\Roaming\Typora\typora-user-images\1644672128647.png)
+
+#####	2.2Redux数据不分块使用
+
+```markdown
+###	使用：
+1.建立reducers文件，用于修改写纯函数修改数据
+​```js
+const initState = {
+  num: 1,
+};
+export default function reducers(prevState = initState, action) {
+  let newState = JSON.parse(JSON.stringify(prevState));
+  const add = () => {
+    return (newState.num += action.payload);
+  };
+  switch (action.type) {
+    case 'ADD':
+      add();
+      break;
+    default:
+      console.log('未匹配到相关type');
+  }
+  return newState;
+}
+
+​```
+
+2.建立store文件用于存储数据
+​```js
+import { createStore } from 'redux';
+import reducer from '../reducers';
+const store = createStore(reducer);
+export default store;
+​```
+
+3.建立actionCreates用于派发动作
+​```js
+import store from '../store/index';
+export const addClick = (payload) => {
+  const action = {
+    type: 'ADD',
+    payload,
+  };
+  store.dispatch(action);
+};
+​```
+
+4.页面使用数据
+  通过store.getState()方法获得整个数据对象，然后从中取出自己想要的数据
+  通过store.subScribe()方法注册监听事件
+  ```js
+  const [num, setNum] = useState(store.getState().num);
+  useEffect(() => {
+    const ev = store.subscribe(() => {
+      setNum(store.getState().num);
+    });
+    return () => {
+      ev();
+    };
+  }, []);
+  ```
+```
 
 
-# 二十一、Mobx
+
+
+
+
+
+
+
+
+
+
+
+
+
+#####	2.3Redux数据分块使用
+
+
+
+ 
+
+
+
+# 二十二、Mobx
 
 Mobx 是一个功能强大，上手非常容易的状态管理工具。redux 的作者也曾经向大家推荐过它，在不少情况下可以使用 Mobx 来替代掉 redux。
 
