@@ -3674,7 +3674,7 @@ function App() {
 
 useRef 返回的值传递给组件或者 DOM 的 ref 属性，就可以通过 ref.current 值**访问组件或真实的 DOM 节点，重点是组件也是可以访问到的**，从而可以对 DOM 进行一些操作，比如监听事件等等。
 
-注意***：通过useRef也可以拿到组件，类组件和元素的一样，但是函数组件需要在函数组件的外层用React.forwardRef(function comp(){})包一层，其中forwardRef()的作用就是将函数组件包上一层类组件，return出原来的函数组件，是的组件的身上有this，从而可以使用ref
+注意\*\*\*：通过 useRef 也可以拿到组件，类组件和元素的一样，但是函数组件需要在函数组件的外层用 React.forwardRef(function comp(){})包一层，其中 forwardRef()的作用就是将函数组件包上一层类组件，return 出原来的函数组件，是的组件的身上有 this，从而可以使用 ref
 
 当然 useRef 远比你想象中的功能更加强大，useRef 的功能有点像类属性，或者说您想要在组件中记录一些值，并且这些值在稍后可以更改。
 
@@ -3870,9 +3870,9 @@ function App() {
 
 不过`useLayoutEffect`在服务端渲染时会出现一个 warning，要消除的话得用`useEffect`代替或者推迟渲染时机。
 
-#	二十、路由React-router
+# 二十、路由 React-router
 
-###	1.简介
+### 1.简介
 
 ```
 1.我们使用里面的react-router-dom来实现路由功能
@@ -3881,15 +3881,15 @@ function App() {
 	BrowserRouter模式	/home	  底层原理：H5的popState＋H5的history api
 ```
 
-###	2.使用
+### 2.使用
 
 ```
 1. 安装包 yarn add react-router-dom    (可以直接参照官网)
 2. 在项目中找入口文件，然后确定模式，HashRouter模式BrowserRouter模式
-	import {BrowserRouer} form "react-router-dom" 然后包裹在组件的最外层 
+	import {BrowserRouer} form "react-router-dom" 然后包裹在组件的最外层
 ```
 
-###	3.案例
+### 3.案例
 
 ```jsx
 // ---------常用模式
@@ -3913,7 +3913,7 @@ const AppRouter = () => {
                             <Route path='/admin/order' component={Order}></Route>
                             <Route path='/admin/bikeMap' component={()=><BikeMap></BikeMap>}></Route>
                             <Route path='/admin/charts/bar' component={Interval}></Route>
-                    </Home>}> 
+                    </Home>}>
                     </Route>
                 </Switch>
         </BrowserRouter>
@@ -3934,8 +3934,8 @@ return (
         <Route path="/home" component={HOme}></Route>
     </Suspense>
 )
-                        
-                        
+
+
 // --------页面跳转
    -------方式一
 import {NavLinnk,Link} form "react-router-dom";
@@ -3944,12 +3944,12 @@ import {NavLinnk,Link} form "react-router-dom";
    -------方式二
 import {useHistory} from 'react-router-dom';
 const history=useHistory();
-history.push('/admin')                        
+history.push('/admin')
 ```
 
-#	二十一、状态管理（Redux）(与十五重复)
+# 二十一、状态管理（Redux）(与十五重复)
 
-###	1.React状态管理的历程
+### 1.React 状态管理的历程
 
 ```
 -	Flux 和reatc同期发布的状态管理工具------基本不用
@@ -3957,9 +3957,9 @@ history.push('/admin')
 -	Mobx Mobx是为了弥补Redux的缺陷-----小部分使用
 ```
 
-###	2.Redux的使用
+### 2.Redux 的使用
 
-#####	2.1Redux基础点
+##### 2.1Redux 基础点
 
 ```
 1.Redux的构成部分，将一个应用分成了四个部分
@@ -3972,7 +3972,7 @@ history.push('/admin')
 	- Redux要求唯一数据源
 	- Redux状态是只读的（不可修改，如果你要修改，需要先拷贝）
 	- Redux要求数据的修改必须是一个纯函数（纯函数：只做数据修改这样一个业务）
-	
+
 3.Redux 使用 yarn add redux
 	中文网：https://www.redux.org.cn/
 	官网：https://redux.js.org/
@@ -3980,89 +3980,56 @@ history.push('/admin')
 
 ![1644672128647](C:\Users\xiagu\AppData\Roaming\Typora\typora-user-images\1644672128647.png)
 
-#####	2.2Redux数据不分块使用
+##### 2.2Redux 数据不分块使用
 
-```markdown
-###	使用：
-1.建立reducers文件，用于修改写纯函数修改数据
+````markdown
+### 使用：
+
+1.建立 reducers 文件，用于修改写纯函数修改数据
 ​```js
 const initState = {
-  num: 1,
+num: 1,
 };
 export default function reducers(prevState = initState, action) {
-  let newState = JSON.parse(JSON.stringify(prevState));
-  const add = () => {
-    return (newState.num += action.payload);
-  };
-  switch (action.type) {
-    case 'ADD':
-      add();
-      break;
-    default:
-      console.log('未匹配到相关type');
-  }
-  return newState;
+let newState = JSON.parse(JSON.stringify(prevState));
+const add = () => {
+return (newState.num += action.payload);
+};
+switch (action.type) {
+case 'ADD':
+add();
+break;
+default:
+console.log('未匹配到相关 type');
+}
+return newState;
 }
 
 ​```
 
-2.建立store文件用于存储数据
-​```js
-import { createStore } from 'redux';
-import reducer from '../reducers';
-const store = createStore(reducer);
-export default store;
-​```
+2.建立 store 文件用于存储数据
+​`js import { createStore } from 'redux'; import reducer from '../reducers'; const store = createStore(reducer); export default store; ​`
 
-3.建立actionCreates用于派发动作
-​```js
-import store from '../store/index';
-export const addClick = (payload) => {
-  const action = {
-    type: 'ADD',
-    payload,
-  };
-  store.dispatch(action);
-};
-​```
+3.建立 actionCreates 用于派发动作
+​`js import store from '../store/index'; export const addClick = (payload) => { const action = { type: 'ADD', payload, }; store.dispatch(action); }; ​`
 
 4.页面使用数据
-  通过store.getState()方法获得整个数据对象，然后从中取出自己想要的数据
-  通过store.subScribe()方法注册监听事件
-  ```js
-  const [num, setNum] = useState(store.getState().num);
-  useEffect(() => {
-    const ev = store.subscribe(() => {
-      setNum(store.getState().num);
-    });
-    return () => {
-      ev();
-    };
-  }, []);
-  ```
+通过 store.getState()方法获得整个数据对象，然后从中取出自己想要的数据
+通过 store.subScribe()方法注册监听事件
+
+​```js
+const [num, setNum] = useState(store.getState().num);
+useEffect(() => {
+  const ev = store.subscribe(() => {
+    setNum(store.getState().num);
+  });
+  return () => {
+    ev();
+  };
+}, []);
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#####	2.3Redux数据分块使用
-
-
-
- 
-
-
+##### 2.3Redux 数据分块使用
 
 # 二十二、Mobx
 
@@ -4583,3 +4550,6 @@ yarn add customize-cra react-app-rewired
 # 补充
 
 ## 生命周期![生命周期](F:\浩鲸新智能\学习\notes\images\生命周期.png)
+````
+
+````
