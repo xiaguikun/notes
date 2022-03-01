@@ -4020,16 +4020,260 @@ return newState;
 ​```js
 const [num, setNum] = useState(store.getState().num);
 useEffect(() => {
-  const ev = store.subscribe(() => {
-    setNum(store.getState().num);
-  });
-  return () => {
-    ev();
-  };
+const ev = store.subscribe(() => {
+setNum(store.getState().num);
+});
+return () => {
+ev();
+};
 }, []);
-```
+````
 
 ##### 2.3Redux 数据分块使用
+
+准备：yarn add redux && yarn add react-redux
+
+1.建立 reducers 文件夹，用来写纯函数修改数据，数据分块使用每个文件代表一个模块页面，最后通过 combineReducer,合并成一个总的 rootReducers
+
+- 建立首页的模块 reducers
+
+```js
+const initState = {
+  list: [],
+};
+export default function reducer(state = initState, action) {
+  const newState = JSON.parse(JSON.stringify(state));
+  switch (action.type) {
+    case GET_USER_LIST:
+      if (action.payload.data.data)
+        newState.list = action.payload.data.data.users;
+      break;
+    default:
+      break;
+  }
+  return newState;
+}
+```
+
+- 总的 reducers
+
+```js
+import { combineReducers } from 'redux';
+import user from './user';
+const rootReducer = combineReducers({
+  user,
+});
+export default rootReducer;
+```
+
+2.建立 store 文件
+
+```js
+import { createStore } from 'redux';
+import rootReducer from '../reducers';
+import { composeWithDevTools } from 'redux-devtools-extension';
+const store = createStore(rootReducer, composeWithDevTools());
+export default store;
+```
+
+3.建立 actionCreators 文件夹，该文件夹也可以创建多个模块页面的文件，在不同页面引入不同的文件即可
+
+```js
+import { INCREMENT } from '../constants';
+export default {
+  increment(payload) {
+    const action = {
+      type: INCREMENT,
+      payload,
+    };
+    return action;
+  },
+};
+```
+
+4.页面中数据的使用,通过 react-redux 中的 connect(mapStateFromProps,mapDispatchFromProps)这个函数来取数据，发动作，
+
+```jsx
+import React from 'react';
+/*
+ * 1. 我们现在redux是做了数据分块的
+ * 2. 组件中要想拿到store中的数据，要通过react-redux提供的api   connect函数【高阶组件】
+ */
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import actions from './actionCreators/home';
+/*
+  connect(mapStateFromProps,mapDispatchFromProps)
+    * 1. 参数
+      * mapStateFromProps
+        * 从store中取出来state作为属性绑定到我们的组件身上，这样我们的组件就得到了props
+      * mapDispatchFromProps
+        * 1. 可以将actionCreators中的方法取出来绑定到我们组件上
+        * 2. 可以主动将actionCreators中创建的action发送给reducer
+    * 2. connect还可帮助我们更新视图
+    * 3. 底层原理
+      *  合并分发
+*/
+
+function App(props) {
+  return (
+    <div>
+      <button
+        onClick={() => {
+          props.increment(10);
+        }}
+      >
+        {' '}
+        +{' '}
+      </button>
+      {props.n}
+    </div>
+  );
+}
+
+const mapStateFromProps = (state) => {
+  // state 就是store中的全部数据  {count: {n: 0}}
+  return state.home; // 只要count的数据
+};
+
+const mapDispatchFromProps = (dispatch) => {
+  return bindActionCreators(actions, dispatch);
+};
+
+export default connect(mapStateFromProps, mapDispatchFromProps)(App);
+```
+
+##### 2.4Redux 数据分块使用异步请求
+
+准备：yarn add redux && yarn add react-redux && yarn add redux-thunk
+
+1.建立 reducers 文件夹（同上），用来写纯函数修改数据，数据分块使用每个文件代表一个模块页面，最后通过 combineReducer,合并成一个总的 rootReducers
+​```js
+
+- 建立首页的模块 reducers
+```js
+  const initState = {
+  list: []
+  }
+  export default function reducer (state=initState,action) {
+  const newState = JSON.parse(JSON.stringify(state))
+  switch (action.type) {
+  case GET_USER_LIST:
+  if (action.payload.data.data) newState.list = action.payload.data.data.users
+  break;
+  default:
+  break;
+  }
+  return newState
+  }
+```
+
+- 总的 reducers
+```js
+  import {combineReducers} from 'redux'
+  import user from './user'
+  const rootReducer = combineReducers({
+  user
+  })
+  export default rootReducer
+
+```
+
+2.建立 store 文件夹,通过 applyMiddleware 来使用中间件
+
+```js
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+/*
+    redux的中间件
+        * redux-log
+        * redux-promise
+        * redux中异步数据请求
+            * redux-thunk
+            * redux-saga  升级版
+    redux的中间件是通过redux的api来调用的，这个api就是  appliMiddleWare(中间1，中间件2)
+*/
+import thunk from 'redux-thunk';
+import rootReducer from '../reducers';
+const store = createStore(
+  rootReducer,
+  composeWithDevTools(applyMiddleware(thunk))
+);
+
+export default store;
+```
+
+3.建立 actionCreaters 文件，也可以根据不同的页面模块来建立不同的文件，只需要在页面使用的时候引入不同的文件即可,这里 return，不再是一个对象，而是一个异步函数，函数中可以做异步请求
+
+```js
+import { getUserListReq, delUserListReq } from '../api';
+import { GET_USER_LIST, DEL_USER_LIST } from '../constant';
+export default {
+  getUserList(payload) {
+    // 没有带异步数据请求写法
+    // return {
+    //     type: '',
+    //     payload
+    // }
+    //!!! 带了异步数据请求写法
+    return async (dispatch) => {
+      // 发送数据请求，发送action
+      dispatch({
+        type: GET_USER_LIST,
+        payload: await getUserListReq(payload),
+      });
+    };
+  },
+};
+```
+
+4.页面数据使用与触发(同上)
+
+```js
+import React, { useEffect } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import actions from './actionCreators/user';
+import { Button } from 'antd';
+export default connect(
+  // 两个参数
+  ({ user }) => user,
+  (dispatch) => bindActionCreators(actions, dispatch)
+)(function App({ list, getUserList, delUserList }) {
+  useEffect(() => {
+    getUserList({
+      query: '',
+      pagenum: 1,
+      pagesize: 4,
+    });
+  }, []);
+
+  if (!list.length) return <div> 数据加载中... </div>;
+
+  const renderList = () =>
+    list.map((v) => (
+      <li key={v.id}>
+        {v.username}
+        <Button
+          type="primary"
+          danger
+          onClick={() => {
+            delUserList(v.id);
+          }}
+        >
+          {' '}
+          删除{' '}
+        </Button>
+      </li>
+    ));
+
+  return (
+    <div>
+      <ul>{renderList()}</ul>
+    </div>
+  );
+});
+```
 
 # 二十二、Mobx
 
@@ -4055,7 +4299,7 @@ Mobx 是一个功能强大，上手非常容易的状态管理工具。redux 的
 
 ## 1、搭建环境
 
-```bash
+​```bash
 mkdir my-app
 cd my-app
 npm init -y
@@ -4071,7 +4315,8 @@ mkdir dist
 touch index.html
 touch src/index.js
 touch webpack.config.js
-```
+
+````
 
 编写 webpack.config.js
 
@@ -4550,6 +4795,18 @@ yarn add customize-cra react-app-rewired
 # 补充
 
 ## 生命周期![生命周期](F:\浩鲸新智能\学习\notes\images\生命周期.png)
+
 ````
 
+```
+
+```
+
+```
+
+```
+
+```
+
+```
 ````
