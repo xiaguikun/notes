@@ -109,110 +109,7 @@ Vue 提供了一个[官方的 CLI](https://github.com/vuejs/vue-cli)，为单页
 </body>
 ```
 
-### 4、基本语法
-
-**4.1.声明式渲染**
-
-- 如果对文本节点声明式渲染，用{{}}的插值语法
-
-- 如果对属性进行声明式渲染，使用 v-bind:title="xxx" (xxx-data 中的响应式变量)
-
-  ```
-  <p v-bind:title="message">{{ message }}</p >
-  ```
-
-**4.2 条件渲染**
-
-- 使用 v-if 指令，里面可以直接使用响应式数据,也可以写语句
-
-  ```
-  <p v-if="flag">是否显示该标签</p >
-  ```
-
-**4.3.循环渲染**
-
-- 使用 v-for 指令， <p v-for="item in arr">{{item}}</p >
-
-  ```
-   <p v-for="item in arr">{{item}}</p >
-  ```
-
-**4.4.绑定事件**
-
-- 使用 v-on 指定， <p v-on:click="handleClick">hello</p >
-
-- 事件处理函数要写在 methods 的 option 里面
-
-  ```
-   <p v-on:click="handleClick">hello</p >
-  ```
-
-**4.5 数据双向绑定**
-
-- v-model 指令，它能轻松实现表单输入和应用状态之间的双向绑定。（相当与 v-bind 绑定 input 的 value 属性和 v-on 的结合）
-
-  ```
-  <input v-model="value"></input>
-  ```
-
-**6.应用&组件实例**
-
-1.全局组件
-
-```js
-//通过Vue.component('组件名',{除el项不可用，其余的所有项都可以使用})
-//1.页面标签写在template项上
-//2.data响应数据为函数，返回一个对象
-Vue.component('VHeader', {
-  data() {
-    return {
-      msg: '这是头部信息啊',
-    };
-  },
-  template: `
-        <div>{{msg}}</div>
-      `,
-});
-```
-
-2.局部组件
-
-```js
-//直接写一个对象就可以，但是需要先在component中注册才能使用
-const VHeader = {
-  props: ['fms'],
-  data() {
-    return {
-      msg: '这是头部啊',
-    };
-  },
-  template: `
-          <div>
-            <div>{{msg}}</div>
-            <div>接受父组件的信息-->
-              <span>{{fms}}</span>
-              </div>
-            </div>
-        `,
-};
-
-const vm = new Vue({
-  el: '#app',
-  data: {
-    msg: '这是父组件的msg信息',
-  },
-  components: {
-    VHeader,
-  },
-  template: `
-        <div>
-            <v-header v-bind:fms="msg"></v-header>
-          </div>
-        `,
-});
-```
-
-**7.响应数据**
+**响应数据**
 
 Vue 中的 data 中的数据会在这个实例被创建的时候注入到 vue 的响应式系统中，data 中的各个数据会被平铺到 vue 实例的属性上
 
@@ -231,7 +128,111 @@ Vue 中的 data 中的数据会在这个实例被创建的时候注入到 vue �
 
 # 二、Vue 基础
 
-### 1.生命周期
+### 1.基本指令与 options
+
+##### 2.1 基本指令
+
+```
+v-if	v-else-if	v-else
+v-for
+v-bind :
+v-on   @
+v-model
+v-html
+v-text
+v-once
+```
+
+\*\*1.声明式渲染，模板语法
+
+- 如果对文本节点声明式渲染，用{{}}的插值语法
+
+- 如果对属性进行声明式渲染，使用 v-bind:title="xxx" (xxx-data 中的响应式变量)
+
+- 模板语法中可以写基本表达式
+
+  ```
+  <p v-bind:title="message">{{ message }}</p >
+  ```
+
+\*\*2. 条件渲染 v-if v-else-if v-else
+
+- 使用 v-if 指令，里面可以直接使用响应式数据,也可以写语句
+
+  ```
+  <p v-if="flag">是否显示该标签</p >
+  ```
+
+\*\*3.循环渲染 v-for
+
+- 使用 v-for 指令， <p v-for="item in arr">{{item}}</p >
+
+  ```
+   <p v-for="item in arr">{{item}}</p >
+  ```
+
+\*\*4.绑定事件 v-on (@)
+
+- 使用 v-on 指定， <p v-on:click="handleClick">hello</p >
+
+- 事件处理函数要写在 methods 的 option 里面
+
+  ```
+  <a v-on:click="doSomething">...</ a>
+  <a @click="doSomething">...</ a>
+
+  <!-- 动态参数的缩写 (2.6.0+) -->
+  <a @[event]="doSomething"> ... </ a>
+  ```
+
+\*\*5. 数据双向绑定 v-model
+
+- v-model 指令，它能轻松实现表单输入和应用状态之间的双向绑定。（相当与 v-bind 绑定 input 的 value 属性和 v-on 的结合）
+
+  ```
+  <input v-model="value"></input>
+  ```
+
+\*\*6. 声明变量 v-bind (:)
+
+- 属性值及属性变为响应式数据中的变量
+
+  ```
+  <a v-bind:href="url">...</ a>
+
+  <a :href="url">...</ a>
+
+  <!-- 动态参数的缩写 (2.6.0+) -->
+  <a :[key]="url"> ... </ a>
+  ```
+
+\*\*7. v-html
+
+- 相当于 innerHTML，可以解析 html 语句
+
+\*\*8. v-text
+
+- 相当于 innerTEXT，可以解析 html 语句
+
+\*\*9. v-once
+
+- DOM 元素只会渲染一次，及时响应式数据发生变化也不会再渲染
+
+##### 2.2option 选项
+
+- el：绑定 DOM 元素
+- data：响应式数据
+- methods：定义方法
+- computed：计算属性
+- watch：监听器
+- components：注册组件
+- template：模板
+- props：父级传下来的 props 属性
+- mixins
+- directives
+- filters
+
+### 2.生命周期
 
 ##### 1.1 实例生命周期运行
 
@@ -316,3 +317,85 @@ Vue 中的 data 中的数据会在这个实例被创建的时候注入到 vue �
   实例销毁后调用。该钩子被调用后，对应 Vue 实例的所有指令都被解绑，所有的事件监听器被移除，所有的子实例也都被销毁。
 
   \*\*该钩子在服务器端渲染期间不被调用。
+
+### 3.组件开发
+
+##### 3.1 组件基础
+
+1.全局组件
+
+```js
+//通过Vue.component('组件名',{除el项不可用，其余的所有项都可以使用})
+//1.页面标签写在template项上
+//2.data响应数据为函数，返回一个对象
+Vue.component('VHeader', {
+  data() {
+    return {
+      msg: '这是头部信息啊',
+    };
+  },
+  template: `
+        <div>{{msg}}</div>
+      `,
+});
+```
+
+2.局部组件
+
+```js
+//直接写一个对象就可以，但是需要先在component中注册才能使用
+const VHeader = {
+  props: ['fms'],
+  data() {
+    return {
+      msg: '这是头部啊',
+    };
+  },
+  template: `
+          <div>
+            <div>{{msg}}</div>
+            <div>接受父组件的信息-->
+              <span>{{fms}}</span>
+              </div>
+            </div>
+        `,
+};
+
+const vm = new Vue({
+  el: '#app',
+  data: {
+    msg: '这是父组件的msg信息',
+  },
+  components: {
+    VHeader,
+  },
+  template: `
+        <div>
+            <v-header v-bind:fms="msg"></v-header>
+          </div>
+        `,
+});
+```
+
+### 4.计算属性和监听器
+
+##### 4.1 计算属性
+
+- computed 是一个 option，是一个对象包含多个属性，属性值为函数，函数必须有返回值
+
+- 当模板中需要多次使用相同逻辑或者复杂的逻辑运算的时候使用计算属性
+- 当所依赖的响应式数据发生变化的时候会重新计算渲染页面
+
+##### 4.2 监听器
+
+- 虽然计算属性在大多数情况下更合适，但有时也需要一个自定义的侦听器。这就是为什么 Vue 通过 watch 选项提供了一个更通用的方法，来响应数据的变化。当需要在数据变化时执行异步或开销较大的操作时，这个方式是最有用的。
+- watch 是一个 option，是一个对象，对象的属性为函数，函数有两个入参，分别是 newValue,oldValue
+
+##### 4.3.VS
+
+- 计算属性 VS 方法
+  - 1.模板中使用方法不同，方法需要加括号调用一次，计算属性可以直接使用
+  - 2.计算属性是有缓存的，模板中多次使用只会执行一次，但是方法多次使用会执行多次
+- 计算属性 VS 监听属性
+  - 1.计算属性是通过所依赖的响应式数据而计算处理自身数据，监听器是通过监听自身数据变化而计算处理其他数据
+  - 2.一般计算属性比较方便，但是如果需要执行异步，或者计算开销比较大，那么用监听器比较好
