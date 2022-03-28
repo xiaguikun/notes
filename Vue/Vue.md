@@ -399,3 +399,47 @@ const vm = new Vue({
 - 计算属性 VS 监听属性
   - 1.计算属性是通过所依赖的响应式数据而计算处理自身数据，监听器是通过监听自身数据变化而计算处理其他数据
   - 2.一般计算属性比较方便，但是如果需要执行异步，或者计算开销比较大，那么用监听器比较好
+
+### 5.class 和 style 绑定
+
+##### 5.1class 类名的绑定
+
+- 1.class 和 v-bind:class 可以共存
+
+  ```
+  <div
+    class="static"
+    v-bind:class="{ active: isActive, 'text-danger': hasError }"
+  ></div>
+  ```
+
+- 2. 使用对象绑定，对象的属性就是类名，属性值是变量或者表达式；这个对象也可以放在响应式数据和计算属性中
+
+  ```
+  <div v-bind:class="{ active: isActive, 'text-danger': hasError }"></div>
+  ```
+
+- 3.使用数组绑定
+
+  ```
+  <div v-bind:class="[activeClass, errorClass]"></div>
+  data: {
+    activeClass: 'active',
+    errorClass: 'text-danger'
+  }
+  ```
+
+##### 5.2style 属性绑定
+
+- 1.使用对象绑定
+
+  ```
+  <div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"></div>
+  <div v-bind:style="styleObject"></div>
+  ```
+
+- 2.通过数组绑定多个对象
+
+  ```
+  <div v-bind:style="[baseStyles, overridingStyles]"></div>
+  ```
