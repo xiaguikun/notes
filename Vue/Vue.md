@@ -141,6 +141,7 @@ v-model
 v-html
 v-text
 v-once
+v-show (同v-if，不同点，v-if是控制元素的渲染与不渲染，v-show是控制元素的display属性，当未false的时候		   元素会被设置为display:none；当元素频繁显示隐藏使用v-show，具有更小的切换开销，初始就不渲染的时		   候，使用v-if,具有更小的初始开销)
 ```
 
 \*\*1.声明式渲染，模板语法
@@ -168,10 +169,13 @@ v-once
 - 使用 v-for 指令， <p v-for="item in arr">{{item}}</p >
 
   ```
-   <p v-for="item in arr">{{item}}</p >
+   //遍历数组的时候
+   <p v-for="(value,index) in arr" :key="index">{{item}}</p >
+   //遍历对象的时候
+    <p v-for="(value，key,index) in obj" :key="index">{{item}}</p >
   ```
 
-\*\*4.绑定事件 v-on (@)
+*\*4.绑定事件 v-on (@)
 
 - 使用 v-on 指定， <p v-on:click="handleClick">hello</p >
 
@@ -438,7 +442,7 @@ const vm = new Vue({
   <div v-bind:style="styleObject"></div>
   ```
 
-- 2.通过数组绑定多个对象
+- 2.通过数组绑定多个对象  
 
   ```
   <div v-bind:style="[baseStyles, overridingStyles]"></div>
