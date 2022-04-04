@@ -447,3 +447,108 @@ const vm = new Vue({
   ```
   <div v-bind:style="[baseStyles, overridingStyles]"></div>
   ```
+  
+
+
+
+###	6.事件处理
+
+#####	6.1事件传参
+
+​	但事件不进行传参的时候，我们可以在methods中定义的事件中默认得到一个event的默认参数，当我们需要传参的时候，我们只需要在后面的括号里一次传参即可，如果此时我们的事件处理函数中还需要用到默认事件event的时候，我们需要在事件event当做参数传下来即$event就是event
+
+```
+<button v-on:click="warn('Form cannot be submitted yet.', $event)">
+  Submit
+</button>
+
+methods: {
+  warn: function (message, event) {
+    // 现在我们可以访问原生事件对象
+    if (event) {
+      event.preventDefault()
+    }
+    alert(message)
+  }
+}
+```
+
+#####	6.2修饰符
+
+- 1.事件修饰符***
+
+```
+1.stop阻止单击事件继续传播，阻止事件冒泡
+<a v-on:click.stop="doThis"></a>
+
+2.prevent提交事件不再重载页面，阻止默认事件 
+<form v-on:submit.prevent="onSubmit"></form>
+
+<!-- 修饰符可以串联 -->
+<a v-on:click.stop.prevent="doThat"></a>
+
+<!-- 只有修饰符 -->
+<form v-on:submit.prevent></form>
+
+3.capture添加事件监听器时使用事件捕获模式
+<!-- 即内部元素触发的事件先在此处理，然后才交由内部元素进行处理 -->
+<div v-on:click.capture="doThis">...</div>
+
+4.self只当在 event.target 是当前元素自身时触发处理函数
+<!-- 即事件不是从内部元素触发的 -->
+<div v-on:click.self="doThat">...</div>
+
+5.once 点击事件将只会触发一次
+<a v-on:click.once="doThis"></a>
+
+6.passive 会告诉浏览器你不想阻止事件的默认行为.passive 修饰符尤其能够提升移动端的性能。
+<!--  滚动事件的默认行为 (即滚动行为) 将会立即触发而不会等待 `onScroll` 完成这其中包含 `event.preventDefault()` 的情况 -->
+<div v-on:scroll.passive="onScroll">...</div>
+```
+
+- 2.按键修饰符***
+
+```
+.enter
+.tab
+.delete (捕获“删除”和“退格”键)
+.esc
+.space
+.up
+.down
+.left
+.right
+```
+
+- 3.系统修饰符***
+
+```
+.ctrl
+.alt
+.shift
+.meta
+```
+
+- 4..exact修饰符`.exact` 修饰符允许你控制由精确的系统修饰符组合触发的事件***
+
+```
+<!-- 即使 Alt 或 Shift 被一同按下时也会触发 -->
+<button v-on:click.ctrl="onClick">A</button>
+
+<!-- 有且只有 Ctrl 被按下的时候才触发 -->
+<button v-on:click.ctrl.exact="onCtrlClick">A</button>
+
+<!-- 没有任何系统修饰符被按下的时候才触发 -->
+<button v-on:click.exact="onClick">A</button>
+```
+
+- 5.鼠标修饰符***
+
+```
+.left
+.right
+.middle
+```
+
+
+
