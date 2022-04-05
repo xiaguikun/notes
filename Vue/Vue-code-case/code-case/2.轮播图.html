@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .box {
+        margin-top: 100px;
+        margin-left: 200px;
+        width: 300px;
+        height: 300px;
+        border: 3px solid black;
+        overflow: hidden;
+        position: relative;
+      }
+      ul,
+      li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      ul {
+        width: 1500px;
+        height: 300px;
+      }
+      li {
+        width: 300px;
+        height: 300px;
+        float: left;
+      }
+      img {
+        width: 300px;
+        height: 300px;
+      }
+      .add {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 9;
+      }
+      .reduce {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 9;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="box" @mouseenter="enter" @mouseleave="leave">
+        <button class="reduce" @click="playLeft">--</button>
+        <ul
+          :style="{transform:'translateX('+(-300 * index)+'px)',transition:playTime}"
+        >
+          <li v-for="(item,index) in images" :key="index">
+            <img :src="item" alt="" />
+          </li>
+          <li>
+            <img :src="images[0]" alt="" />
+          </li>
+        </ul>
+        <button class="add" @click="playRight">++</button>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script>
+      const vm = new Vue({
+        el: '#app',
+        data: {
+          index: 0,
+          playTime: '0.5s',
+          done: true,
+          images: [
+            'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.jj20.com%2Fup%2Fallimg%2F1113%2F0F220092145%2F200F2092145-4-1200.jpg&refer=http%3A%2F%2Fimg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1651722887&t=95e8ba98d73ce85efdea51be9862b332',
+            'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.jj20.com%2Fup%2Fallimg%2F1113%2F0F420110430%2F200F4110430-6-1200.jpg&refer=http%3A%2F%2Fimg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1651722887&t=ce951f6b7604a9b0c6b91fc9fec6b533',
+            'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.jj20.com%2Fup%2Fallimg%2F1113%2F041620104229%2F200416104229-2-1200.jpg&refer=http%3A%2F%2Fimg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1651722887&t=55b26c8fb097044f66e616ee40509b46',
+            'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
+          ],
+          timerInterval: null,
+        },
+        methods: {
+          playRight() {
+            this.index++;
+            this.playTime = '0.5s';
+            if (this.index >= 4) {
+              let timerOut = setTimeout(() => {
+                this.playTime = '0s';
+                this.index = 0;
+                clearTimeout(timerOut);
+              }, 500);
+            }
+          },
+          playLeft() {
+            this.index--;
+            this.playTime = '0.5s';
+            if (this.index <= 0) {
+              let timerOut = setTimeout(() => {
+                this.playTime = '0s';
+                this.index = 4;
+                clearTimeout(timerOut);
+              }, 500);
+            }
+          },
+          enter() {
+            clearInterval(this.timerInterval);
+          },
+          leave() {
+            this.timerInterval = setInterval(() => {
+              this.playRight();
+            }, 1500);
+          },
+        },
+        mounted() {
+          this.timerInterval = setInterval(() => {
+            this.playRight();
+          }, 1500);
+        },
+      });
+    </script>
+  </body>
+</html>

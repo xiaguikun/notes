@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <p>从子组件获取来的msg：{{parentMsg}}</p>
+      <br />
+      <comp-box @change="change"></comp-box>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script>
+      const CompBox = {
+        data() {
+          return {
+            childMsg: '子组件内部信息,每次点击信息就会加$',
+          };
+        },
+        methods: {
+          handleClick() {
+            this.childMsg = this.childMsg + '$';
+            this.$emit('change', this.childMsg);
+          },
+        },
+        mounted() {
+          this.$emit('change', this.childMsg);
+        },
+        template: `
+          <div @click="handleClick">{{childMsg}}</div>
+        `,
+      };
+      const vm = new Vue({
+        el: '#app',
+        data: {
+          parentMsg: '',
+        },
+        methods: {
+          change(value) {
+            this.parentMsg = value;
+          },
+        },
+        components: {
+          CompBox,
+        },
+      });
+    </script>
+  </body>
+</html>

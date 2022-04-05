@@ -381,6 +381,39 @@ const vm = new Vue({
 });
 ```
 
+#####	3.2组件传参
+
+- 父子组件传参：通过自定义属性传参
+
+  ```
+  1.父组件将数据通过自定义属性绑定到子组件的标签上
+  2.子组件通过props:["arr"]去接收父组件传下来的参数,如果需要校验数据类型，则为props:{arr:Array}
+  ```
+
+- 子父组件通信：通过自定义事件传参
+
+  ```
+  1.父组件将自定义的事件绑定到子组件的标签上
+  2.子组件通过this.$emit("自定义事件名",传递父组件的参数)；可以直接触发也可以在需要的事件中触发
+      <div id="app">
+          <p>从子组件获取来的msg：{{parentMsg}}</p>
+          <comp-box @change="change"></comp-box>
+      </div>
+       methods: {
+       handleClick() {
+       		this.childMsg = this.childMsg + '$';
+       		this.$emit('change', this.childMsg);
+       	},
+       },
+       mounted() {
+       	this.$emit('change', this.childMsg);
+       },
+  ```
+
+  
+
+
+
 ### 4.计算属性和监听器
 
 ##### 4.1 计算属性
@@ -551,4 +584,12 @@ methods: {
 ```
 
 
+
+
+
+记录
+
+```
+1.vue修改data是同步的还是异步的
+```
 
