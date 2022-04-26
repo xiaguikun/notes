@@ -184,7 +184,7 @@ v-show (同v-if，不同点，v-if是控制元素的渲染与不渲染，v-show�
   ```
   <a v-on:click="doSomething">...</ a>
   <a @click="doSomething">...</ a>
-
+  
   <!-- 动态参数的缩写 (2.6.0+) -->
   <a @[event]="doSomething"> ... </ a>
   ```
@@ -203,9 +203,9 @@ v-show (同v-if，不同点，v-if是控制元素的渲染与不渲染，v-show�
 
   ```
   <a v-bind:href="url">...</ a>
-
+  
   <a :href="url">...</ a>
-
+  
   <!-- 动态参数的缩写 (2.6.0+) -->
   <a :[key]="url"> ... </ a>
   ```
@@ -397,16 +397,16 @@ const vm = new Vue({
   2.子组件通过this.$emit("自定义事件名",传递父组件的参数)；可以直接触发也可以在需要的事件中触发
       <div id="app">
           <p>从子组件获取来的msg：{{parentMsg}}</p>
-          <comp-box @change="change"></comp-box>
+          <comp-box @changeP="change"></comp-box>
       </div>
        methods: {
        handleClick() {
        		this.childMsg = this.childMsg + '$';
-       		this.$emit('change', this.childMsg);
+       		this.$emit('changP', this.childMsg);
        	},
        },
        mounted() {
-       	this.$emit('change', this.childMsg);
+       	this.$emit('changep', this.childMsg);
        },
   ```
 
@@ -583,13 +583,130 @@ methods: {
 .middle
 ```
 
+###	7.插槽
 
+#####	1.基本使用
 
-
-
-记录
+1.slot标签 <slot></slot> 标签来承接my-comp2组件
 
 ```
-1.vue修改data是同步的还是异步的
+<my-comp>
+	<my-comp2></my-comp2>
+</my-comp>
+
+Vue.component('myComp', {
+  template: `
+    <div class="demo-alert-box">
+      <strong>Error!</strong>
+      <slot></slot>
+    </div>
+  `
+})
+```
+
+2.插槽后背内容
+
+直接在slot标签中写内容，会被用来当做后备内容，只有当未传入内容的时候（即该插槽未被使用的时候显示后备内容）
+
+#####		2.具名插槽
+
+具名插槽的使用：
+
+​	（1）子组件中的<slot name="插槽名"></slot>，添加name属性
+
+​	（2）父组件传下来的元素单元使用template标签包裹 <template v-slot:插槽名></template>   v-slot:简写#
+
+```html
+<child>
+  <template #name>
+    <span>小明</span>
+  </template>
+  <template v-slot:age>
+    <span>18</span>
+  </template>
+</child>
+
+<div>
+  <div>
+    姓名：
+    <slot name="name"></slot>
+  </div>
+  <div>
+    年龄：
+    <slot name="age"></slot>
+  </div>
+</div>
+```
+
+补充，动态插槽名
+
+[动态指令参数](https://cn.vuejs.org/v2/guide/syntax.html#动态参数)也可以用在 `v-slot` 上，来定义动态的插槽名：
+
+```
+<base-layout>
+  <template v-slot:[dynamicSlotName]>
+  </template>
+</base-layout>
+```
+
+
+
+### 8.动态组件
+
+动态组价常用于在不同组件之间进行动态切换是非常有用的
+
+```
+currentComp 为data里面的响应式数据存储当前要展示的组件名称
+<component is="currentComp"></component>
+```
+
+2.is属性
+
+is属性接收一个组件名 将这个标签指向我们想要的组件
+
+有些 HTML 元素，诸如 `<ul>`、`<ol>`、`<table>` 和 `<select>`，对于哪些元素可以出现在其内部是有严格限制的。而有些元素，诸如 `<li>`、`<tr>` 和 `<option>`，只能出现在其它某些特定的元素内部
+
+所以如果我们要在table标签中使用组件，就必须要用到is属性,将我们的标签指向我们的组件
+
+```html
+<div id="app">
+  <select name="" id="">
+    <option is="op" v-for="(item,index) in list" :key="index" :item="item"></option>
+  </select>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script>
+  const op={
+    props:["item"],
+    template:`<option>{{item}}</option>`
+  }
+  const Vm=new Vue({
+    el:"#app",
+    data:{
+      list:["a","b","c"]
+    },
+    components:{
+      op
+    }
+  })
+</script>
+```
+
+
+
+
+
+
+
+### 	记录
+
+```
+1.vue修改data是同步的还是异步的  同步
+2。组件命名大驼峰或者连字符命名
+
+3-7自定义事件
+props校验数据类型   自定义事件
+3-8 插槽
+slot 备用内用
 ```
 
