@@ -585,7 +585,7 @@ methods: {
 
 ###	7.插槽
 
-#####	1.基本使用
+#####	 7.1.基本使用
 
 1.slot标签 <slot></slot> 标签来承接my-comp2组件
 
@@ -608,7 +608,7 @@ Vue.component('myComp', {
 
 直接在slot标签中写内容，会被用来当做后备内容，只有当未传入内容的时候（即该插槽未被使用的时候显示后备内容）
 
-#####		2.具名插槽
+#####		7.2.具名插槽
 
 具名插槽的使用：
 
@@ -651,9 +651,11 @@ Vue.component('myComp', {
 
 
 
-### 8.动态组件
+### 8.动态组件与缓存组件
 
-动态组价常用于在不同组件之间进行动态切换是非常有用的
+#####	8.1.动态组件
+
+1.动态组价常用于在不同组件之间进行动态切换是非常有用的
 
 ```
 currentComp 为data里面的响应式数据存储当前要展示的组件名称
@@ -692,6 +694,416 @@ is属性接收一个组件名 将这个标签指向我们想要的组件
 </script>
 ```
 
+#####	8.2.缓存组件
+
+缓存组价<keep-alive></keep-alive>,通过keep-alive标签缓存我们的组件，保证我们在切换组件的时候组件不会被销毁掉
+
+如果我们想销毁掉一个缓存组件可以使用this.$destroy()，调用一次就可以销毁掉这个组件
+
+缓存组件可以通过生命周期 activated(){} 和 deactivated(){} 两个生命周期捕获到
+
+```html
+<keep-alive>
+  <component :is="compName"></component>
+</keep-alive>
+
+<script>
+  const AddAge = {
+    data() {
+      return {
+        num: 1,
+        timer: null,
+      };
+    },
+    template: `<div>{{num}}</div>`,
+    mounted() {
+      setInterval(() => {
+        this.num = this.num + 1;
+      }, 1000);
+    },
+    activated() {
+      clearTimeout(this.timer);
+    },
+    deactivated() {
+      this.timer = setTimeout(() => {
+        this.$destroy();
+      }, 5000);
+    },
+  };
+</script>
+```
+
+
+
+###	9.过度与动画
+
+Vue 在插入、更新或者移除 DOM 时，提供多种不同方式的应用过渡效果。包括以下工具：在 CSS 过渡和动画中自动应用 class；可以配合使用第三方 CSS 动画库，如 Animate.css；在过渡钩子函数中使用 JavaScript 直接操作 DOM；可以配合使用第三方 JavaScript 动画库，如 Velocity.js；
+
+详细参考官方文档
+
+#####	9.1基本使用
+
+使用transition标签包裹我们需要过度的组件或者标签元素
+
+
+
+- 1.使用Vue自带的类名（其中v就是我们的transition标签上的name属性，通过这些类名写我们的css样式）
+
+在进入/离开的过渡中，会有 6 个 class 切换。
+
+1. `v-enter`：定义进入过渡的开始状态。在元素被插入之前生效，在元素被插入之后的下一帧移除。
+2. `v-enter-active`：定义进入过渡生效时的状态。在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡/动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数。
+3. `v-enter-to`：**2.1.8 版及以上**定义进入过渡的结束状态。在元素被插入之后下一帧生效 (与此同时 `v-enter` 被移除)，在过渡/动画完成之后移除。
+4. `v-leave`：定义离开过渡的开始状态。在离开过渡被触发时立刻生效，下一帧被移除。
+5. `v-leave-active`：定义离开过渡生效时的状态。在整个离开过渡的阶段中应用，在离开过渡被触发时立刻生效，在过渡/动画完成之后移除。这个类可以被用来定义离开过渡的过程时间，延迟和曲线函数。
+6. `v-leave-to`：**2.1.8 版及以上**定义离开过渡的结束状态。在离开过渡被触发之后下一帧生效 (与此同时 `v-leave` 被删除)，在过渡/动画完成之后移除。
+
+```html
+<transition name="v">
+  <h3 v-if="show">hello world</h3>
+</transition>
+```
+
+
+
+- 2.自定义过度标签名，以此配合使用第三方库的css样式
+
+我们可以通过以下 attribute 来自定义过渡类名：
+
+`enter-class`
+
+`enter-active-class`
+
+`enter-to-class` (2.1.8+)
+
+`leave-class`
+
+`leave-active-class`
+
+`leave-to-class` (2.1.8+)
+
+他们的优先级高于普通的类名，这对于 Vue 的过渡系统和其他第三方 CSS 动画库，如 [Animate.css](https://daneden.github.io/animate.css/) 结合使用十分有用。
+
+```html
+<link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+
+<div id="example-3">
+  <button @click="show = !show">
+    Toggle render
+  </button>
+  <transition
+    name="custom-classes-transition"
+    enter-active-class="animated tada"
+    leave-active-class="animated bounceOutRight"
+  >
+    <p v-if="show">hello</p>
+  </transition>
+</div>
+```
+
+
+
+##### 9.2js钩子函数
+
+可以在methods中定义这些方法，获取到动画的每一步的执行函数
+
+```html
+<transition
+  v-on:before-enter="beforeEnter"
+  v-on:enter="enter"
+  v-on:after-enter="afterEnter"
+  v-on:enter-cancelled="enterCancelled"
+
+  v-on:before-leave="beforeLeave"
+  v-on:leave="leave"
+  v-on:after-leave="afterLeave"
+  v-on:leave-cancelled="leaveCancelled"
+>
+  <!-- ... -->
+</transition>
+```
+
+注意：当只用 JavaScript 过渡的时候，**在 `enter` 和 `leave` 中必须使用 `done` 进行回调**。否则，它们将被同步调用，过渡会立即完成。
+
+
+
+###	10.混入
+
+混入 (mixin) 提供了一种非常灵活的方式，来分发 Vue 组件中的可复用功能。一个混入对象可以包含任意组件选项。当组件使用混入对象时，所有混入对象的选项将被“混合”进入该组件本身的选项。
+
+使用：首先自定义mixin，然后在使用的时候通过Vue的option选项mixins:[mixin]，来将自定义的mixin引入到我们的组件中，mixin时通过递归合并的方式合并到我们的组件中的
+
+数据合并：当组件和混入对象含有同名选项时，这些选项将以恰当的方式进行“合并”。比如，数据对象在内部会进行递归合并，并在发生冲突时以组件数据优先。（mixin会先执行）
+
+```html
+<script>
+var mixin = {
+  dada(){
+    return {
+      a:1111,
+      c:3
+    }
+  }
+  created: function () {
+    console.log('混入对象的钩子被调用')
+  }
+}
+
+new Vue({
+  mixins: [mixin],
+  data(){
+    return {
+      a:2,
+      b:2
+    }
+	}
+  created: function () {
+    console.log('组件钩子被调用')
+  }
+})
+
+</script>
+//data:{a:1,b:2,c:3}
+//log : 混入对象的钩子被调用  --->   组件钩子被调用
+```
+
+
+
+###	11.自定义指令
+
+  - 除了核心功能默认内置的指令 (v-model 和 v-show)，Vue 也允许注册自定义指令,在directives这个option中去注册
+  - 有5个钩子函数 bind inserted update componentUpdated unbind
+  - 函数的简写
+    指令名 () {
+      // 相当于bind和update
+    }    
+
+```html
+<div id="app">
+  <div v-demo:style.50.red>你好</div>
+  <div v-demo:style.30.green>hello</div>
+</div>
+
+<script>
+  new Vue({
+    el: '#app',
+    data() {
+      return {
+        d: 111
+      }
+    },
+    directives: {
+      // focus: {
+      //   // 指令的定义
+      //   inserted: function (el) {
+      //     el.focus()
+      //   }
+      // }
+      // demo: {
+      //   bind(el, binding, vnode, oldVnode) {
+      //     // 只调用一次，指令第一次绑定到元素时调用
+      //     console.log('bind')
+      //   },
+      //   inserted(el, binding, vnode, oldVnode) {
+      //     // 被绑定元素插入父节点时调用
+      //     console.log('inserted')
+      //   },
+      //   update(el, binding, vnode, oldVnode) {
+      //     // 所在组件的 VNode 更新时调用，但是可能发生在其子 VNode 更新之前
+      //     console.log('update')
+      //   },
+      //   componentUpdated(el, binding, vnode, oldVnode) {
+      //     // 指令所在组件的 VNode 及其子 VNode 全部更新后调用
+      //     console.log('componentUpdated')
+      //   },
+      //   unbind(el, binding, vnode, oldVnode) {
+      //     // 只调用一次，指令与元素解绑时调用。
+      //     console.log('unbind')
+      //   }
+      // }
+      
+      // 对象的形式简写成函数的形式
+      demo(el, binding) {
+        // console.log('el', el)
+        // console.log('binding', binding)
+        // binding.arg: 传给指令的参数，可选。  a
+        // binding.expression: 字符串形式的指令表达式.   d
+        // binding.modifiers: 一个包含修饰符的对象  {b: true, c: true}
+        // binding.name: 指令名，不包括 v- 前缀     demo
+        // binding.value: 指令的绑定值     111
+        const obj = binding.modifiers
+        const [fontSize, color] = Object.keys(obj)
+        el[binding.arg].fontSize = fontSize + 'px'
+        el[binding.arg].color = color
+      }
+    }
+  })
+</script>
+```
+
+
+
+###	12.过滤器
+
+Vue.js 允许你自定义过滤器(filters选项中)，可被用于一些常见的  文本格式化，过滤器可以串联 ，串联时候接收的value入参值为上一个过滤器返回的值
+
+```html
+<div id="app">
+  <div>{{sex}}</div>
+  <div>{{sex | formatSex}}</div>
+  <div>{{sex | formatSex | formatSexTwo}}</div>
+</div>
+
+<script>
+  const vm = new Vue({
+    el: "#app",
+    data: {
+      sex: 1,
+    },
+    filters: {
+      formatSex(value) {
+        if (value === 1) {
+          return "男";
+        } else {
+          return "女";
+        }
+      },
+      formatSexTwo(value) {
+        if (value === "男") {
+          return "♂";
+        } else {
+          return "♀";
+        }
+      },
+    },
+  });
+</script>
+```
+
+
+
+# 二、Vue项目
+
+
+
+###	1.脚手架 VueCLI
+
+#####	1.1创建项目
+
+安装 npm install @vue/cli -g
+
+创建项目 vue create 项目名( 不要用git bash去装， 用cmd或者vscode )
+
+Please pick a preset    ->    Manually select features
+
+Check the features needed for your project
+(*) Choose Vue version
+(*) Babel
+( ) TypeScript
+( ) Progressive Web App (PWA) Support
+(*) Router
+(*) Vuex
+(*) CSS Pre-processors
+(*) Linter / Formatter
+( ) Unit Testing
+( ) E2E Testing
+
+Use history mode for router       ->   no
+
+Pick a CSS pre-processor     ->    sass
+
+Pick a linter / formatter config   
+
+##### 1.2项目目录
+
+  - node_modules       项目的依赖
+  - public             静态资源文件（不会被打包进去的）
+  - src                源目录，开发目录
+    - assets              静态资源文件（会被打包的）
+    - components          存放组件的文件夹
+    - router              存放路由的文件夹
+    - store               存放vuex的文件夹
+    - views               存放页面的文件夹
+    - app.vue             项目的根组件
+    - main.js             项目的入口的js文件
+  - .browserslistrc    浏览器支持
+  - .eslintrc.js       做eslint的代码风格检查
+  - babel.config.js    用于编译babel
+  - package-lock.json  锁定版本
+  - package.json       项目依赖的记录文件
+  - README.md          说明文档
+
+
+
+###	2.项目开发配置
+
+#####	2.1 Vue.config.js
+
+具体配置项参考官网：https://cli.vuejs.org/zh/config/
+
+  - 用于webpack的配置，手动创建在项目的根目录
+  - 因为webpack配置放在了node_modules里面
+  - 修改完需要重启，除了src文件夹以外，修改了都要重启
+
+#####	2.2移动端适配
+
+######	2.2.1 rem适配
+
+  - 使用postcss的postcss-pxtorem，lib-flexible插件
+  - npm i amfe-flexible -S  安装amfe-flexible,用来设置根元素字体大小的
+  - 在main.js里面引入 import "amfe-flexible"
+  - npm i postcss-pxtorem -D  安装postcss-pxtorem
+  - 在根目录创建文件 .postcssrc.js
+
+```js
+  module.exports = {
+    plugins: {
+      autoprefixer: {
+        browsers: ['Android >= 4.0', 'iOS >= 8'],
+      },
+      'postcss-pxtorem': {
+        rootValue: 37.5,
+        propList: ['*'],
+      },
+    },
+  };
+```
+
+######	2.2.2 VW VH适配
+
+Vant 默认使用 `px` 作为样式单位，如果需要使用 `viewport` 单位 (vw, vh, vmin, vmax)，推荐使用 [postcss-px-to-viewport](https://github.com/evrone/postcss-px-to-viewport) 进行转换。
+
+[postcss-px-to-viewport](https://github.com/evrone/postcss-px-to-viewport) 是一款 PostCSS 插件，用于将 px 单位转化为 vw/vh 单位。
+
+PostCSS PostCSS 示例配置
+
+下面提供了一份基本的 PostCSS 示例配置，可以在此配置的基础上根据项目需求进行修改。
+
+```js
+// postcss.config.js
+module.exports = {
+  plugins: {
+    'postcss-px-to-viewport': {
+      viewportWidth: 375,
+    },
+  },
+};
+```
+
+> Tips: 在配置 postcss-loader 时，应避免 ignore node_modules 目录，否则将导致 Vant 样式无法被编译。
+
+
+
+#####	2.3 样式隔离
+
+在style标签上添加 scoped 表示单文件组件的css单独作用域
+
+
+
+
+
+
+
 
 
 
@@ -701,12 +1113,48 @@ is属性接收一个组件名 将这个标签指向我们想要的组件
 ### 	记录
 
 ```
-1.vue修改data是同步的还是异步的  同步
-2。组件命名大驼峰或者连字符命名
+
 
 3-7自定义事件
 props校验数据类型   自定义事件
 3-8 插槽
 slot 备用内用
+3-9缓存组件
+4-1,2 动画
 ```
+
+###	问题
+
+```
+1.vue修改data是同步的还是异步的  同步
+2.组件命名大驼峰或者连字符命名
+3.sesstion和cookie的区别
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
