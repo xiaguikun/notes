@@ -1050,8 +1050,7 @@ Pick a linter / formatter config
 ######	2.2.1 rem适配
 
   - 使用postcss的postcss-pxtorem，lib-flexible插件
-  - npm i amfe-flexible -S  安装amfe-flexible,用来设置根元素字体大小的
-  - 在main.js里面引入 import "amfe-flexible"
+  - npm i amfe-flexible -S  安装amfe-flexible,用来设置根元素字体大小的，安装完成后在main.js里面引入 import "amfe-flexible" 
   - npm i postcss-pxtorem -D  安装postcss-pxtorem
   - 在根目录创建文件 .postcssrc.js
 
@@ -1100,6 +1099,132 @@ module.exports = {
 
 
 
+###	3.Vue Router
+
+官网网址 ：https://router.vuejs.org/zh/guide/#router-link
+
+#####	3.1基本使用
+
+  - 特点
+    - 嵌套的路由/视图表
+    - 模块化的、基于组件的路由配置
+    - 路由参数、查询、通配符
+    - 基于 Vue.js 过渡系统的视图过渡效果
+    - 细粒度的导航控制
+    - 带有自动激活的 CSS class 的链接
+    - HTML5 历史模式或 hash 模式，在 IE9 中自动降级
+    - 自定义的滚动条行为
+
+  - router和route
+    - 我们可以在任何组件内通过 this.$router 访问路由器，也可以通过 this.$route 访问当前路由
+
+
+  - router-link
+    - to  相当于href
+    - active-class  设置链接激活时使用的 CSS 类名,默认值: "router-link-active"
+    - exact     表示精准匹配
+    - exact-active-class   前两个结合,默认值: "router-link-exact-active"
+  - router-view
+    - 路由的出口
+  - 编程式导航
+    - 用js来做跳转
+    - 有复杂逻辑的时候（除了跳转还要做其他的事情）， 在布局里不方便使用router-link的时候
+    - this.$router.push(url)      跳转到新页面，有跳转记录
+    - this.$router.replace(url)   跳转到新页面，替换当前页面，没有记录，不能后退
+    - this.$router.router.go(n)   前进或者后退几步
+  - 命名路由
+    - 给route添加name属性
+    - <router-link to="/detail/456"></router-link>
+    - <router-link :to="{name: 'detail', params: {id: 456}}"></router-link>
+    - this.$router.push('/detail/456')
+    - this.$router.push({name: 'detail', params: {id: 456}})
+  - 重定向和别名
+    - 重定向： 当用户访问 /a时，URL 将会被替换成 /b，然后匹配路由为 /b
+    - { path: '/a', redirect: '/b' }
+    - 别名： /a 的别名是 /b，意味着，当用户访问 /b 时，URL 会保持为 /b，但是路由匹配则为 /a，就像用户访问 /a 一样。
+    - { path: '/a', component: A, alias: '/b' }
+
+
+  - vue-router有几种模式
+
+    - hash        
+
+      - /#       
+      - 比较难看
+      - 比较好操作
+
+    - history
+
+      - 不带#
+
+    - abstract
+
+      
+
+#####	3.2 路由守卫
+
+  - 全局路由守卫
+
+    ```
+      router.beforeEach((to, from, next) => {
+        if (to.meta.requiresAuth) {
+          if (localStorage.getItem('token')) {
+              如果有token，说明登录过了
+            next()
+          } else {
+              如果没有token，那么跳到登录页
+            next('/login')
+          }
+        }
+        next()
+      })
+    ```
+
+  - 路由独享守卫
+
+    ```
+      {
+        path: '/mini-video',
+        component: () => import('../views/MiniVideo.vue'),
+        // meta: { requiresAuth: true }
+        // 路由独享的守卫
+        beforeEnter: (to, from, next) => {
+          if (localStorage.getItem('token')) {
+            next()
+          } else {
+            next('/login')
+          }
+        }
+      },
+    ```
+
+  - 组件内守卫
+
+    - beforeRouteEnter
+      - 取不到this
+    - beforeRouteUpdate
+    - beforeRouteLeave
+
+
+
+
+
+
+
+页面引入使用
+
+承载者<router-view>  
+
+跳转者<router-link>
+
+路由表
+
+actived样式
+
+动态路由 /:id，页面传参
+
+
+
 
 
 
@@ -1129,8 +1254,65 @@ slot 备用内用
 1.vue修改data是同步的还是异步的  同步
 2.组件命名大驼峰或者连字符命名
 3.sesstion和cookie的区别
-
+4.组件的name属性
+    1.组件自身调用，递归组件
+    当在组件中需要调用自身的时候，可以通过name属性来使用
+    2.使用vue-tools工具时的组件名称
+    当使用调式工具时，组件的名称是通过name属性来设置的
+    3.移除keep-alive状态下组件自动缓存功能
+    我们知道，在组件外使用了keep-alive导致我们第二次进入的时候页面不会重新请求ajax，即mounted() 钩子函数只会执行一次
+    解决的办法一个增加activated()函数,每次进入新页面的时候再获取一次数据（此处可以了解一下keep-alive状态下的activated()函数和			deactivated()函数）
+    另外一个办法就是keep-alive中增加 exclud=“name”，移除选中页面的缓存
+    <keep-alive exclude="name">
+      <router-view />
+    </keep-alive>
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
