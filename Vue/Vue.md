@@ -1163,7 +1163,7 @@ module.exports = {
 
 #####	3.2 路由守卫
 
-  - 全局路由守卫
+  - 全局路由守卫，写在路由表中
 
     ```
       router.beforeEach((to, from, next) => {
@@ -1180,7 +1180,7 @@ module.exports = {
       })
     ```
 
-  - 路由独享守卫
+  - 路由独享守卫，写在路由表中的具体的路由中
 
     ```
       {
@@ -1198,12 +1198,236 @@ module.exports = {
       },
     ```
 
-  - 组件内守卫
+  - 组件内守卫，写在组件里面script中
 
     - beforeRouteEnter
-      - 取不到this
+      - 取不到this，因为还没进入到页面里面
     - beforeRouteUpdate
+      - 写在组件里面，当我们的路由的参数发生变化时候触发，可以在这里重新请求数据 
     - beforeRouteLeave
+      - 当路由离开组件的时候触发
+
+###	4Vuex
+
+#####	4.1.Vuex基本概念
+
+  - 是一个状态管理模式（全局状态管理工具）
+  - Vue components  ----dispatch---->   actions    ----commit----->  mutations  ------->  state
+  - 由5部分组成
+    - state
+      - 用于存放全局的状态的
+      - mapState   放在computed里面
+    - getters
+      - 相当于vuex里面的计算属性
+      - mapGetters  放在computed里面
+    - mutations
+      -   用于放改变state的同步函数
+      - 有两个参数，第一个参数是state，第二个参数是payload，payload最好是对象
+      - mapMutations   放在methods里面
+    - actions
+    - modules
+
+<img src="/Users/xiaguikun/Library/Application Support/typora-user-images/image-20220515115326374.png" alt="image-20220515115326374" style="zoom:50%;" />
+
+#####	4.2Vuex 模块
+
+  基础
+
+    ```js
+        export default new Vuex.Store({
+        //存放状态数据
+        state: {
+            nowCity: '全国',
+            cityId: ''
+        },
+        //存放方法，一般是同步函数方法，通过其他页面的this.$store.commit('方法名'，传参)
+        mutations: {
+            clickNowCity(state, payload) {
+                state.nowCity = payload.ite.name;
+                state.cityId = payload.ite.cityId;
+            }
+        },
+        //存放方法，一般是异步方法，通过其他页面的this.$store.dispatch('actions里面的方法名'，传参)
+        //在action 这个option中定义 方法名(context,payload){context.commit(mutations里面的方法名，传参)}
+        actions: {
+    
+        },
+        modules: {}
+      });
+      //其他页面用数据的时候，就在其他页面用计算后属性(computed)，在计算后属性中定义一个，例如city(){return this.$store.state.状态数据名}
+    ```
+
+  进阶(核心概念)
+
+  - 是一个状态管理模式（全局状态管理工具）
+
+  - Vue components  ----dispatch---->   actions    ----commit----->  mutations  ------->  state
+
+  - 由5部分组成
+
+    - state
+
+      - 用于存放全局的状态的
+
+      - mapState   放在computed里面,(可以使用对象展开运算符(...)，将此对象混入到外部对象中)
+            ```js
+            //store index.js
+            export default new Vuex.Store({
+                state:{
+                  count1:1,
+                  count2:2,
+                  count3:3
+                }
+            })
+            //用store的Vue文件，写在计算属性中
+            export default{
+              computed:{
+              //普通调用
+                count(){
+                  return this.$store.state.count1
+                }
+              //使用辅助函数mapState
+                ...mapState({
+                  //使用箭头函数
+                  count1: state=>state.count1,
+                  //传字符串参数
+                  count2:'count2',
+                  //使用常规函数，与局部状态结合
+                  count3(state){
+                    return state.count3+this.count
+                  }
+                })
+              }
+            }
+            
+
+            ```
+
+    - getters
+
+      - 相当于vuex里面的计算属性
+
+      - mapGetters  放在computed里面
+            ```js
+            //store index.js
+            export default new Vuex.Store({
+              state:{
+                count1:1,
+                count2:2
+              },
+              getters:{
+                data1:state=> state.count1+state.count2,
+                data2:(state,getters)=>state.count1+getters.data1
+              }
+            })
+            //调用，在需要使用的vue文件中，写在计算属性中
+              export default{
+                computed:{
+                //普通调用
+                data(){
+                  return this.$store.getters.data1
+                },
+                //使用辅助函数mapGetters
+                ...mapGetters([
+                  'data1',
+                  'data2',
+                  //如果想换属性名字
+                  data:'data1'
+                ])
+            ```
+
+                }
+              }
+            ```
+
+    - mutations
+
+      - 用于放改变state的同步函数
+
+      - 有两个参数，第一个参数是state，第二个参数是payload，payload最好是对象，是可以改变数据状态的地方
+
+      - mapMutations   放在methods里面
+
+        ```js
+        //store index.js
+        export default new Vuex.Store({
+          state:{
+            count1:1,
+            count2:2
+          },
+          mutations:{
+            changeState(state,payload){
+              state.count1=state.count1+payload.count;
+              state.count2=state.count2+payload.count;
+            }
+          }
+        })
+        //mutayions的changeState函数需要在组件中commit提交才能执行，定义在methods中
+        export default{
+          methods:{
+        //普通方法，
+            handerClick(){
+              this.$store.commit('changeState',{count:1})
+            }
+        //对象风格提交
+            handerClick(){
+              this.$store.commit({
+                type:'changeState',
+                count:1
+              })
+            },
+        //使用辅助函数mapMutations
+          ...mapMutations([
+            'changeState'
+          ])
+          ...mapActions({
+            add: 'changeState' // 将 `this.add()` 映射为 `this.$store.dispatch('changeState')`
+          })
+          }
+        }
+        
+        ```
+
+    - actions
+
+      - Action 提交的是 mutation，而不是直接变更状态。Action 可以包含任意异步操作。
+
+      ```js
+      //store index.js
+        export default new Vuex.Store({
+          state:{
+            count:1
+          },
+          mutations:{
+            change(state){
+              state.count++;
+            }
+          },
+          actions:{
+            hander(context){
+              context.commit('change');
+            }
+          }
+        })
+      //组件中发送action函数
+      export default{
+        methods:{
+          //普通方法
+          handerClick(){
+            this.$store.dispatch('hander')
+          }
+          //使用mapActions
+          ...mapActions([
+            'hander'
+          ])
+          ...mapActions({
+            add: 'hander' // 将 `this.add()` 映射为 `this.$store.dispatch('hander')`
+          })
+        }
+      }
+      ```
+
+    - modules
 
 
 
@@ -1266,11 +1490,51 @@ slot 备用内用
     <keep-alive exclude="name">
       <router-view />
     </keep-alive>
+    
+5.路由表建立，路由传参，路由嵌套，嵌套路由中的根路径，就是 children的path前面加/ ，编程式导航（name，就是路由表中的name）
 ```
 
 
 
+### place
 
+
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
+
+### place
 
 
 

@@ -248,17 +248,17 @@ ReactDOM.render(<App name="react" />, document.getElementById('root'));
   ```jsx
   import React from 'react';
   import ReactDOM from 'react-dom';
-
+  
   class App extends React.Component {
     render() {
       return <h1>欢迎进入{this.props.name}的世界</h1>;
     }
   }
-
+  
   const app = new App({
     name: 'react',
   }).render();
-
+  
   ReactDOM.render(app, document.getElementById('root'));
   ```
 
@@ -4031,6 +4031,8 @@ ev();
 
 ##### 2.3Redux 数据分块使用
 
+<img src="/Users/xiaguikun/Library/Application Support/typora-user-images/image-20220515180341437.png" alt="image-20220515180341437" style="zoom:50%;" />
+
 准备：yarn add redux && yarn add react-redux
 
 1.建立 reducers 文件夹，用来写纯函数修改数据，数据分块使用每个文件代表一个模块页面，最后通过 combineReducer,合并成一个总的 rootReducers
@@ -4299,7 +4301,7 @@ Mobx 是一个功能强大，上手非常容易的状态管理工具。redux 的
 
 ## 1、搭建环境
 
-​```bash
+```bash
 mkdir my-app
 cd my-app
 npm init -y
