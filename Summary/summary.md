@@ -179,3 +179,10 @@ css  :root{--titleColor:blue} color:var(--titleColor)
  方案一：通过编写globalCss样式文件，定义变量名，在开发中颜色使用变量名来定义，更换主题的时候只需要更换主题颜色库就可以了
 
 ```
+
+###	localStorage和sessionStorage的新开窗口访问问题
+
+  对于符合同源策略（同协议，域名，端口）的同一个页面在统一浏览器不同窗口之间sesstionStorage是不可以共享的，因为这相当于两个不同的会话，浏览器会开辟不同的会话存储空间；localStorage是可以相互共享的，因为属于本地存储。
+
+  localStorage在同一浏览器的不同窗口之间的发生改变，另一个窗口可以通过window.addEventListener('storage',(e)=>{})，storage事件监听到，同一窗口监听不到（跨窗口，跨页面通信，当多个页面都要访问本地存储的时候，可以在改变storage的时候通知到其他页面）
+
